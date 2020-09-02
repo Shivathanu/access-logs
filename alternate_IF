@@ -1,0 +1,39 @@
+getTypeFormId(order, orderType, insuranceCompany) {
+    const capital = _.get(order, 'journey.intendedSum');
+    const birthdate = _.get(order, 'journey.birthdate');
+    const age = moment().diff(birthdate, 'years');
+    const rules = {
+      allianz: [{
+        conditions: capital <= 200000,
+        formId: 'O9K1TgME'
+      }],
+      april: [{
+        conditions: capital <= 20000,
+        formId: 'p140lGyQ'
+      }, {
+        conditions:
+          age >= 18 && age <= 45 && capital >= 20001 && capital <= 200000
+          || age >= 46 && age <= 55 && capital >= 20001 && capital <= 150000,
+        formId: 'rQGAckJu'
+      }],
+      liberty: [{
+        conditions: true,
+        formId: 'Xt3cD9tb'
+      }],
+      metlife: [{
+        conditions: age >= 18 && age <= 50 && capital <= 350000,
+        formId: 'R2oV77O5'
+      }, {
+        conditions: age >= 51 && age <= 69 && capital <= 250000,
+        formId: 'BQ2NFpTV'
+      }]
+    }[`${insuranceCompany}`];
+
+    if (orderType === 'life') {
+      const { formId } = _.findLast(rules, data => { return data.conditions === true; }) || '';
+
+      return formId;
+    }
+
+    return null;
+  }
